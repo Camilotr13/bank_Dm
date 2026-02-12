@@ -1,5 +1,8 @@
 import { Router } from "express";
 import { pool } from "../db.js";
+import { validateId } from "../middlewares/validateId.js";
+import { createAccountValidation } from "../middlewares/createAccountValidation.js";
+
 
 const router = Router();
 
@@ -8,7 +11,7 @@ router.get("/accounts", async (req, res) => {
    res.json(rows);
 });
 
-router.get("/accounts/:id", async (req, res) => {
+router.get("/accounts/:id", validateId, async (req, res) => {
    const { id } = req.params;
 
    const { rows } = await pool.query(
@@ -34,11 +37,11 @@ router.get("/accounts/:id/balance", async (req, res) => {
    if (rows.length === 0) {
       return res.status(404).json({ message: "Account not found" });
    }
-
+     
    res.json(rows[0]);
 });
 
-router.post("/accounts", async (req, res) => {
+router.post("/accounts",createAccountValidation, async (req, res) => {
    const { name, balance } = req.body;
 
    if (!name || balance === undefined) {
@@ -131,6 +134,7 @@ router.put("/accounts/:id", async (req, res) => {
 });
 
 export default router;
+
 
 
 //cambiar rama
